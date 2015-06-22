@@ -14,7 +14,7 @@ void clearConsole()
   CONSOLE_SCREEN_BUFFER_INFO cinfo;
   GetConsoleScreenBufferInfo(handle, &cinfo);
   COORD c = {0, 0};
-  ConsoleVec s = GetConsoleSize();
+  ConsoleVec s = getConsoleSize();
   DWORD junk; // junk because I don't need this, but FillConsoleOutputCharacter fails if you pass a null pointer
   FillConsoleOutputCharacter(handle, ' ', s.x * s.y, c, &junk);
 

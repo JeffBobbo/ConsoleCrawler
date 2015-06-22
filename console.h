@@ -18,7 +18,7 @@ struct ConsoleVec
   uint16_t y;
   ConsoleVec() { x = y = uint16_t(0); };
   ConsoleVec(uint16_t a, uint16_t b) { x = a; y = b; };
-  ConsoleVec(ConsoleVec& o) { x = o.x; y = o.y; };
+  ConsoleVec(const ConsoleVec& o) { x = o.x; y = o.y; };
 };
 
 void clearConsole();
