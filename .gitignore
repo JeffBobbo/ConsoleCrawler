@@ -1,4 +1,4 @@
 *.o
 *.sublime-*
-*.out
-*.exe
+./*.out
+./*.exe
