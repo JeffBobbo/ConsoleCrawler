@@ -24,7 +24,7 @@ public:
 
   virtual void doImpact(const double damage, Soul* source);
   virtual void doDeath(Soul* source);
-  virtual void makeImpact(Soul* target);
+  virtual void makeImpact(Soul* target, bool heal = false);
 
   inline uint64_t getXP() const { return xp; };
   virtual int64_t deltaXP(const int64_t d); // return number of levels up

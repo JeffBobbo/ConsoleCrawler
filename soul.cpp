@@ -65,11 +65,11 @@ void Soul::doDeath(Soul* source)
   hp = 0;
 }
 
-void Soul::makeImpact(Soul* target)
+void Soul::makeImpact(Soul* target, bool heal /* = false */)
 {
   if (!target)
     return;
-  target->doImpact(calcDamage(), this);
+  target->doImpact(heal ? calcHeal() : calcDamage(), this);
 }
 
 int16_t Soul::calcDamage()
@@ -78,4 +78,12 @@ int16_t Soul::calcDamage()
   double str = static_cast<double>(getStr());
   double accuracy = randRange(0.0, 1.0 / atk) * std::pow(atk, 1.05);
   return (accuracy > 0.3 ? 1 : 0) + str * accuracy; // give them a bit of free damage
+}
+
+int16_t Soul::calcHeal()
+{
+  double def = static_cast<double>(getDef());
+  double str = static_cast<double>(getStr());
+  double accuracy = randRange(0.0, 1.0 / def) * std::pow(def, 1.025);
+  return -(str * accuracy + (accuracy > 0.3 ? 1 : 0)); // give them a bit of free heal
 }

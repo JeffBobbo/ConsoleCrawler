@@ -25,14 +25,14 @@ void Player::doDeath(Soul* source)
     std::cout << "You were killed, but by whom?" << std::endl;
 }
 
-void Player::makeImpact(Soul* target)
+void Player::makeImpact(Soul* target, bool heal /* = false */)
 {
   if (!target)
   {
     std::cout << "No target" << std::endl;
     return;
   }
-  Soul::makeImpact(target);
+  Soul::makeImpact(target, heal);
 }
 
 int64_t Player::deltaXP(const int64_t d)

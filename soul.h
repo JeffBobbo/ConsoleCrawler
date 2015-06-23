@@ -29,9 +29,10 @@ public:
 
   virtual void doImpact(const int16_t damage, Soul* source);
   virtual void doDeath(Soul* source);
-  virtual void makeImpact(Soul* target);
+  virtual void makeImpact(Soul* target, bool heal = false);
 
   virtual int16_t calcDamage();
+  virtual int16_t calcHeal();
 };
 
 #endif
