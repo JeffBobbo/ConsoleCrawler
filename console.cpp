@@ -126,4 +126,5 @@ void output(const char* const str, const int16_t x /* = -1 */, const int16_t y /
   if (x >= 0 && y >= 0)
     setCursorPosition(x, y);
   std::cout << str;
+  setColour(FG_DEFAULT|BG_DEFAULT);
 }
