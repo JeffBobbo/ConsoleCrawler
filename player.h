@@ -26,8 +26,9 @@ public:
   virtual void doDeath(Soul* source);
   virtual void makeImpact(Soul* target, bool heal = false);
 
-  inline uint64_t getXP() const { return xp; };
+  inline int64_t getXP() const { return xp; };
   virtual int64_t deltaXP(const int64_t d); // return number of levels up
+  inline int64_t getSP() const { return sp; };
 
   virtual void upgradeSkill(const uint8_t skill);
 };
