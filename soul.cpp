@@ -11,7 +11,7 @@ void Soul::doImpact(const int16_t damage, Soul* source)
   Player* const me = dynamic_cast<Player* const>(this);
   if (damage < 0)
   {
-    const double actualHeal = -damage - (max - hp);
+    const int16_t actualHeal = std::min(-damage, max - hp);
     if (me)
       addMessage("You were healed for " + toString(actualHeal) + "hp.");
   }
@@ -78,7 +78,7 @@ int16_t Soul::calcDamage()
   double atk = static_cast<double>(getAtk());
   double str = static_cast<double>(getStr());
   double accuracy = randRange(0.0, 1.0 / atk) * std::pow(atk, 1.05);
-  return (accuracy > 0.3 ? 1 : 0) + str * accuracy; // give them a bit of free damage
+  return str * accuracy + (accuracy > 0.3 ? 1 : 0); // give them a bit of free damage
 }
 
 int16_t Soul::calcHeal()
