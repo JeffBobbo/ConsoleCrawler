@@ -7,16 +7,14 @@
 #include "console.h"
 #include "misc.h"
 
-bool cleanName(std::string str)
-{
-  const char* filter = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890";
-  return str.find_first_not_of(filter) == std::string::npos;
-}
 
 enum OPTIONS
 {
-  PROG = 1,
-  HEAL
+  OPT_PROG = 1,
+  OPT_HEAL,
+  OPT_ATK,
+  OPT_STR,
+  OPT_DEF
 };
 
 void presentOptions(Player* p, Soul* s)
@@ -38,12 +36,18 @@ void presentOptions(Player* p, Soul* s)
   output("Available actions:", 0, 5);
   uint16_t opt = 6;
   if (s)
-    output("[" + toString(PROG) + "] Attack", 0, opt++);
+    output("[" + toString(OPT_PROG) + "] Attack", 0, opt++);
   else
-    output("[" + toString(PROG) + "] Walk forwards", 0, opt++);
+    output("[" + toString(OPT_PROG) + "] Walk forwards", 0, opt++);
   if (p->getHPPerc() < 1.0)
-  output("[" + toString(HEAL) + "] Heal", 0, opt++);
-  output("[quit] quit", 0, opt++);
+  output("[" + toString(OPT_HEAL) + "] Heal", 0, opt++);
+  if (p->getSP())
+  {
+    output("[" + toString(OPT_ATK) + "] Increase atk", 0, opt++);
+    output("[" + toString(OPT_STR) + "] Increase str", 0, opt++);
+    output("[" + toString(OPT_DEF) + "] Increase def", 0, opt++);
+  }
+  output("[q] quit", 0, opt++);
   output("> ", 0, opt++);
 
   int oldPos = opt - 1;
@@ -56,26 +60,26 @@ void presentOptions(Player* p, Soul* s)
 int main(int argc, char** argv)
 {
   for (int i = 1; i < argc; ++i)
-  {
     argv[i] = argv[i];
-  }
 
   clearConsole();
   std::cout << "Welcome to ConsoleCrawler!" << std::endl << std::endl << "Name yourself, explorer!" << std::endl << "> ";
 
   Player* player = nullptr;
-
+  while (player == nullptr)
   {
-    while (player == nullptr)
-    {
-      std::string name;
-      std::getline(std::cin, name);
+    std::string name;
+    std::getline(std::cin, name);
 
-      if (cleanName(name))
-        player = new Player(100, 100, 1, 1, 1, name); // yes I'm a horrible person who doesn't use c++11 memory management
-      else
-        std::cout << "Sorry, I didn't get that, try something else?" << std::endl << "> ";
+    if (name.length() > 20)
+    {
+      std::cout << "That's far too long for me to remember!" << std::endl << "> ";
+      continue;
     }
+    if (cleanName(name))
+      player = new Player(100, 100, 1, 1, 1, name); // yes I'm a horrible person who doesn't use c++11 memory management
+    else
+      std::cout << "Sorry, I didn't get that, try something else?" << std::endl << "> ";
   }
 
   clearConsole();
@@ -86,12 +90,12 @@ int main(int argc, char** argv)
     std::string input;
     std::getline(std::cin, input);
 
-    if (input == "quit")
+    if (input == "q")
       break;
 
     switch (toInt(input))
     {
-      case PROG:
+      case OPT_PROG:
       {
         if (!gremlin)
         {
@@ -112,9 +116,16 @@ int main(int argc, char** argv)
         }
       }
       break;
-      case HEAL:
+      case OPT_HEAL:
       {
         player->makeImpact(player, true);
+      }
+      break;
+      case OPT_ATK:
+      case OPT_STR:
+      case OPT_DEF:
+      {
+        player->upgradeSkill(toInt(input) - OPT_ATK);
       }
       break;
     }
