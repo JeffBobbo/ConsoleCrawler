@@ -3,7 +3,7 @@
 
 #include <chrono>
 #include <cstdint>
-#include <random>
+#include <string>
 
 inline uint64_t tickCount() { return std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1); };
 
@@ -33,7 +33,11 @@ std::string toString(const T& t, bool* const success = nullptr)
 }
 
 void toUpper(std::string& s);
-
 void toLower(std::string& s);
+
+bool cleanName(const std::string& n);
+
+void addMessage(const std::string& m);
+bool popMessage(std::string& m);
 
 #endif

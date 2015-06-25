@@ -1,5 +1,10 @@
 #include "misc.h"
 
+#include <random>
+#include <list>
+
+std::list<std::string> mList;
+
 #ifdef DEBUG
 #include <iostream>
 #endif
@@ -54,4 +59,26 @@ void toLower(std::string& s)
 {
   for (std::string::iterator it = s.begin(); it != s.end(); ++it)
     *it = std::tolower(*it);
+}
+
+
+bool cleanName(const std::string& str)
+{
+  const char* filter = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ .,-1234567890";
+  return str.find_first_not_of(filter) == std::string::npos;
+}
+
+void addMessage(const std::string& m)
+{
+  mList.push_front(m);
+}
+
+bool popMessage(std::string& m)
+{
+  m = "";
+  if (mList.begin() == mList.end())
+    return false;
+  m = mList.back();
+  mList.pop_back();
+  return true;
 }
