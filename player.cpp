@@ -1,5 +1,7 @@
 #include "player.h"
 
+#include "misc.h"
+
 const int64_t XP_PER_LEVEL = 1000;
 
 
@@ -18,18 +20,18 @@ void Player::doImpact(const double damage, Soul* source)
 void Player::doDeath(Soul* source)
 {
   if (source == this)
-    std::cout << "You killed yourself!" << std::endl;
+    addMessage("You killed yourself!");
   if (source)
-    std::cout << "You were killed by a gremlin!" << std::endl;
+    addMessage("You were killed by a gremlin!");
   else
-    std::cout << "You were killed, but by whom?" << std::endl;
+    addMessage("You were killed, but by whom?");
 }
 
 void Player::makeImpact(Soul* target, bool heal /* = false */)
 {
   if (!target)
   {
-    std::cout << "No target" << std::endl;
+    addMessage("No target");
     return;
   }
   Soul::makeImpact(target, heal);
@@ -57,12 +59,15 @@ void Player::upgradeSkill(const uint8_t skill)
   switch (skill)
   {
     case 0:
+      addMessage("Increased atk!");
       atk++;
     break;
     case 1:
+      addMessage("Increased str!");
       str++;
     break;
     case 2:
+      addMessage("Increased def!");
       def++;
     break;
   }

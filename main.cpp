@@ -45,6 +45,12 @@ void presentOptions(Player* p, Soul* s)
   output("[" + toString(HEAL) + "] Heal", 0, opt++);
   output("[quit] quit", 0, opt++);
   output("> ", 0, opt++);
+
+  int oldPos = opt - 1;
+  std::string m;
+  while (popMessage(m))
+    output(m, 0, opt++);
+  setCursorPosition(2, oldPos);
 }
 
 int main(int argc, char** argv)
@@ -77,7 +83,6 @@ int main(int argc, char** argv)
   while (true)
   {
     presentOptions(player, gremlin);
-    std::cout << std::flush;
     std::string input;
     std::getline(std::cin, input);
 
@@ -91,7 +96,7 @@ int main(int argc, char** argv)
         if (!gremlin)
         {
           gremlin = new Soul(10, 10, 1, 1, 1); // a weak gremlin
-          std::cout << "A wild gremlin appears!" << std::endl;
+          addMessage("A wild gremlin appears!");
         }
         else
         {
@@ -116,6 +121,7 @@ int main(int argc, char** argv)
     clearConsole();
   }
 
+  clearConsole();
   if (gremlin)
     delete gremlin;
   delete player;

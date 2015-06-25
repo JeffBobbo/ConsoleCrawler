@@ -4,6 +4,7 @@
 #include "misc.h"
 
 #include <sstream>
+#include <cmath>
 
 void Soul::doImpact(const int16_t damage, Soul* source)
 {
@@ -12,12 +13,12 @@ void Soul::doImpact(const int16_t damage, Soul* source)
   {
     const double actualHeal = -damage - (max - hp);
     if (me)
-      std::cout << "You were healed for " << actualHeal << "hp." << std::endl;
+      addMessage("You were healed for " + toString(actualHeal) + "hp.");
   }
   else
   {
     if (me)
-      std::cout << "You were hit for " << damage << "hp." << std::endl;
+      addMessage("You were hit for " + toString(damage) + "hp.");
   }
   hp -= damage;
   if (hp <= 0.0)
@@ -29,11 +30,11 @@ void Soul::doImpact(const int16_t damage, Soul* source)
 void Soul::doDeath(Soul* source)
 {
   if (source == this)
-    std::cout << "The gremlin killed themself?" << std::endl;
+    addMessage("The gremlin killed themself?");
   if (source->isPlayer())
   {
     Player* p = static_cast<Player*>(source);
-    std::cout << "You killed a gremlin!" << std::endl;
+    addMessage("You killed a gremlin!");
 
     // give some xp
     double victimLevel = getLevel();
@@ -45,9 +46,11 @@ void Soul::doDeath(Soul* source)
     ss << "You gained " << xp << "XP";
     if (levelled)
     {
-      ss << " and levelled up";
+      ss << " and gained ";
       if (levelled > 1)
-        ss << " " << levelled << " times";
+        ss << levelled << " skill points";
+      else
+        ss << "a skill point";
       ss << "!";
     }
     else
@@ -55,12 +58,10 @@ void Soul::doDeath(Soul* source)
       ss << ".";
     }
     ss << " " << (XP_PER_LEVEL - p->getXP()) << "XP until next level.";
-    std::cout << ss.str() << std::endl;
-    if (levelled)
-      p->upgradeSkill(randRange(0, 2));
+    addMessage(ss.str());
   }
   if (!source)
-    std::cout << "The gremlin died... But whom killed it?";
+    addMessage("The gremlin died... But whom killed it?");
 
   hp = 0;
 }
