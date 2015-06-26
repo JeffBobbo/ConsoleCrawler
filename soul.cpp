@@ -15,12 +15,16 @@ void Soul::doImpact(const int16_t damage, Soul* source)
   {
     const int16_t actualHeal = std::min(-damage, max - hp);
     if (me)
-      addMessage("You were healed for " + toString(actualHeal) + "hp.");
+      addMessage("You were healed for " + toString(actualHeal) + "HP.");
+    else
+      addMessage("The gremlin healed himself for " + toString(actualHeal) + "!");
   }
   else
   {
     if (me)
-      addMessage("You were hit for " + toString(damage) + "hp.");
+      addMessage("You were hit for " + toString(damage) + "HP.");
+    else
+      addMessage("You hit the gremlin for " + toString(damage) + "HP.");
   }
   hp -= damage;
   if (hp <= 0.0)
