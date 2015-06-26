@@ -63,7 +63,7 @@ void Soul::doDeath(Soul* source)
     {
       ss << ".";
     }
-    ss << " " << (XP_PER_LEVEL - p->getXP()) << "XP until next level.";
+    ss << " " << (XP_PER_LEVEL - p->getXP()) << "XP until next skill point.";
     addMessage(ss.str());
   }
   if (!source)
