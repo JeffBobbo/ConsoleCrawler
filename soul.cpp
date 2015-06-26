@@ -8,6 +8,8 @@
 
 void Soul::doImpact(const int16_t damage, Soul* source)
 {
+  if (damage == 0)
+    return;
   Player* const me = dynamic_cast<Player* const>(this);
   if (damage < 0)
   {
