@@ -20,7 +20,7 @@ enum OPTIONS
 void presentOptions(Player* p, Soul* s)
 {
   output(p->getName() + "'s status:", 0, 0);
-  output(std::string("Level: ") + toString(p->getLevel()), 0, 1);
+  output("Level: " + toString(p->getLevel()) + " - " + toString(p->getXP()) + "XP, " + toString(p->getSP()) + "SP", 0, 1);
   output(std::string("Atk: ") + toString(p->getAtk()) + ", Str: " + toString(p->getStr()) + ", Def: " + toString(p->getDef()), 0, 2);
   output(std::string("HP: ") + toString(p->getHP()) + "/" + toString(p->getHPMax()) + " (" + toString(static_cast<int16_t>(p->getHPPerc() * 100.0)) + "%)", 0, 3, (p->getHPPerc() >= 0.7 ? FG_GREEN : p->getHPPerc() >= 0.3 ? FG_YELLOW : FG_RED));
 
@@ -61,6 +61,8 @@ int main(int argc, char** argv)
 {
   for (int i = 1; i < argc; ++i)
     argv[i] = argv[i];
+
+  seedMT();
 
   clearConsole();
   std::cout << "Welcome to ConsoleCrawler!" << std::endl << std::endl << "Name yourself, explorer!" << std::endl << "> ";
