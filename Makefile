@@ -1,10 +1,10 @@
 EXEC:=ConsoleCrawler
 
-MAIN = main.o soul.o player.o misc.o console.o
+MAIN = main.o soul.o player.o misc.o console.o event.o
 
 # general compiler settings
 CPPFLAGS=
-CXXFLAGS=-std=c++11 -Wall -Wextra -Werror -ggdb -DDEBUG
+CXXFLAGS=-std=c++11 -Wall -Wextra -Werror -ggdb
 LDFLAGS=
 
 #default target is debug Linux

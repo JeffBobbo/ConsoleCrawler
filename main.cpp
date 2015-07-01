@@ -1,8 +1,14 @@
 #include <iostream>
 #include <cstdint>
 #include <sstream>
-#include <algorithm>
+#include <algorithm>  // std::max
+#include <functional> // eventHandler
+#include <locale>     // eventHandler
 
+#include <thread>
+#include <chrono>
+
+#include "event.h"
 #include "soul.h"
 #include "player.h"
 #include "console.h"
@@ -21,7 +27,7 @@ enum OPTIONS
 void presentOptions(Player* p, Soul* s)
 {
   output(p->getName() + "'s status:", 0, 0);
-  output("Level: " + toString(p->getLevel()) + " - " + toString(p->getXP()) + "XP, " + toString(p->getSP()) + "SP", 0, 1);
+  output("Level: " + toString(p->getLevel()) + " - " + toString(p->getXP()) + "XP, " + toString(p->getSP()) + "SP" + (getTurn() ? ". Turn: " + toString(getTurn()) : ""), 0, 1);
   output(std::string("Atk: ") + toString(p->getAtk()) + ", Str: " + toString(p->getStr()) + ", Def: " + toString(p->getDef()), 0, 2);
   output(std::string("HP: ") + toString(p->getHP()) + "/" + toString(p->getHPMax()) + " (" + toString(static_cast<int16_t>(p->getHPPerc() * 100.0)) + "%)", 0, 3, (p->getHPPerc() >= 0.7 ? FG_GREEN : p->getHPPerc() >= 0.3 ? FG_YELLOW : FG_RED));
 
@@ -58,6 +64,26 @@ void presentOptions(Player* p, Soul* s)
   setCursorPosition(2, oldPos);
 }
 
+int32_t currentKey = 0;
+bool eventHandler(const Event& event)
+{
+  std::locale loc;
+  switch (event.eType)
+  {
+    case Event::EVENT_TYPE::KEYBOARD:
+      if (event.eKeyState == false)
+        break;
+
+      currentKey = event.eKey;
+      if (std::toupper(static_cast<char >(event.eKey), loc) == 'Q') // Q, 113 for q
+        return false;
+    break;
+    default:
+    break;
+  }
+  return true;
+}
+
 int main(int argc, char** argv)
 {
   for (int i = 1; i < argc; ++i)
@@ -80,23 +106,23 @@ int main(int argc, char** argv)
       continue;
     }
     if (cleanName(name))
-      player = new Player(100, 100, 1, 1, 1, name); // yes I'm a horrible person who doesn't use c++11 memory management
+      player = new Player(100, 100, 1, 1, 1, name); // yes I'm a horrible person who doesn't use c++11's memory management
     else
       std::cout << "Sorry, I didn't get that, try something else?" << std::endl << "> ";
   }
 
+  receiver = new Receiver(std::function<bool(Event&)>(eventHandler));
   clearConsole();
   Soul* gremlin = nullptr;
-  while (true)
+  while (receiver->pollEvents())
   {
+    if (currentKey == -1)
+      continue;
     presentOptions(player, gremlin);
-    std::string input;
-    std::getline(std::cin, input);
 
-    if (input == "q")
-      break;
-
-    switch (toInt(input))
+    int32_t opt = currentKey - Event::KEY::K_0;
+    bool goodTurn = false;
+    switch (opt)
     {
       case OPT_PROG:
       {
@@ -122,28 +148,48 @@ int main(int argc, char** argv)
             gremlin = nullptr;
           }
         }
+        goodTurn = true;
       }
       break;
       case OPT_HEAL:
       {
-        player->makeImpact(player, true);
+        if (getTurn() - player->getLastHeal() < TURNS_PER_HEAL)
+        {
+          uint64_t turns = TURNS_PER_HEAL - (getTurn() - player->getLastHeal());
+          addMessage("You can't heal yourself right now (" + toString(turns) + " turn" + (turns > 1 ? "s" : "") + " until next).");
+        }
+        else
+        {
+          goodTurn = player->makeImpact(player, true);
+        }
       }
       break;
       case OPT_ATK:
       case OPT_STR:
       case OPT_DEF:
       {
-        player->upgradeSkill(toInt(input) - OPT_ATK);
+        player->upgradeSkill(opt - OPT_ATK);
+      }
+      break;
+      default:
+      {
       }
       break;
     }
+    currentKey = -1;
+    if (goodTurn)
+      incTurn();
+    std::cout << std::flush; // kinda outta place, but saves doing it every call to Output()
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000 / 50));
     clearConsole();
   }
 
+  setColour(FG_DEFAULT|BG_DEFAULT);
   clearConsole();
   if (gremlin)
     delete gremlin;
   delete player;
+  delete receiver;
 
   return 0;
 }
