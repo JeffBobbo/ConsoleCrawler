@@ -6,13 +6,17 @@
 #include <sstream>
 #include <cmath>
 
-void Soul::doImpact(const int16_t damage, Soul* source)
+const uint64_t TURNS_PER_HEAL = 10;
+
+bool Soul::doImpact(const int16_t damage, Soul* source)
 {
   if (damage == 0)
-    return;
+    return true; // no hit done, but it's not because of failure
   Player* const me = dynamic_cast<Player* const>(this);
   if (damage < 0)
   {
+    if (this == source)
+      lastHeal = getTurn();
     const int16_t actualHeal = std::min(-damage, max - hp);
     if (me)
       addMessage("You were healed for " + toString(actualHeal) + "HP.");
@@ -31,6 +35,7 @@ void Soul::doImpact(const int16_t damage, Soul* source)
     doDeath(source);
   if (hp >= max)
     hp = max;
+  return true;
 }
 
 void Soul::doDeath(Soul* source)
@@ -72,11 +77,11 @@ void Soul::doDeath(Soul* source)
   hp = 0;
 }
 
-void Soul::makeImpact(Soul* target, bool heal /* = false */)
+bool Soul::makeImpact(Soul* target, bool heal /* = false */)
 {
   if (!target)
-    return;
-  target->doImpact(heal ? calcHeal() : calcDamage(), this);
+    return false;
+  return target->doImpact(heal ? calcHeal() : calcDamage(), this);
 }
 
 int16_t Soul::calcDamage()
@@ -92,5 +97,5 @@ int16_t Soul::calcHeal()
   double def = static_cast<double>(getDef());
   double str = static_cast<double>(getStr());
   double accuracy = randRange(0.0, 1.0 / def) * std::pow(def, 1.025);
-  return -(str * accuracy + (accuracy > 0.3 ? 1 : 0)); // give them a bit of free heal
+  return -(str * accuracy + 5);
 }

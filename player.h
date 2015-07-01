@@ -22,15 +22,15 @@ public:
 
   inline std::string getName() const { return name; };
 
-  virtual void doImpact(const double damage, Soul* source);
+  virtual bool doImpact(const double damage, Soul* source);
   virtual void doDeath(Soul* source);
-  virtual void makeImpact(Soul* target, bool heal = false);
+  virtual bool makeImpact(Soul* target, bool heal = false);
 
   inline int64_t getXP() const { return xp; };
   virtual int64_t deltaXP(const int64_t d); // return number of levels up
   inline int64_t getSP() const { return sp; };
 
-  virtual void upgradeSkill(const uint8_t skill);
+  virtual bool upgradeSkill(const uint8_t skill);
 };
 
 #endif
