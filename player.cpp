@@ -9,12 +9,12 @@ Player::Player(double h, double m, int16_t a, int16_t s, int16_t d, std::string 
   Soul(h, m, a, s, d), name(n)
 {
   xp = 0;
-//  up = 0;
+  sp = 0;
 }
 
-void Player::doImpact(const double damage, Soul* source)
+bool Player::doImpact(const double damage, Soul* source)
 {
-  Soul::doImpact(damage, source);
+  return Soul::doImpact(damage, source);
 }
 
 void Player::doDeath(Soul* source)
@@ -27,14 +27,14 @@ void Player::doDeath(Soul* source)
     addMessage("You were killed, but by whom?");
 }
 
-void Player::makeImpact(Soul* target, bool heal /* = false */)
+bool Player::makeImpact(Soul* target, bool heal /* = false */)
 {
   if (!target)
   {
     addMessage("No target");
-    return;
+    return false;
   }
-  Soul::makeImpact(target, heal);
+  return Soul::makeImpact(target, heal);
 }
 
 int64_t Player::deltaXP(const int64_t d)
@@ -51,10 +51,10 @@ int64_t Player::deltaXP(const int64_t d)
 }
 
 
-void Player::upgradeSkill(const uint8_t skill)
+bool Player::upgradeSkill(const uint8_t skill)
 {
   if (sp <= 0)
-    return;
+    return false;
 
   switch (skill)
   {
@@ -72,4 +72,5 @@ void Player::upgradeSkill(const uint8_t skill)
     break;
   }
   sp--;
+  return true;
 }
