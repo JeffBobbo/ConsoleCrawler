@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdint>
 #include <sstream>
+#include <algorithm>
 
 #include "soul.h"
 #include "player.h"
@@ -101,7 +102,12 @@ int main(int argc, char** argv)
       {
         if (!gremlin)
         {
-          gremlin = new Soul(10, 10, 1, 1, 1); // a weak gremlin
+          int16_t pLevel = player->getLevel();
+          int16_t pointsToSpend = pLevel * 3;
+          int16_t pAtk = pointsToSpend * randRange(0.25, 0.5);
+          int16_t pStr = pointsToSpend * randRange(0.25, 0.5);
+          int16_t pDef = pointsToSpend - (pAtk + pStr);
+          gremlin = new Soul(9 + pLevel, 9 + pLevel, pAtk, pStr, pDef);
           addMessage("A wild gremlin appears!");
         }
         else
