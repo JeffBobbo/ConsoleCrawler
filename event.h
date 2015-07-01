@@ -21,7 +21,7 @@ public:
     L_ARROW = 37,
     U_ARROW,
     R_ARROW,
-    D_ARROW
+    D_ARROW,
     L_SQ_BRACKET = 219,
     R_SQ_BRACKET = 221,
 #else
