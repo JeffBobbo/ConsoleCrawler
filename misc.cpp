@@ -82,3 +82,13 @@ bool popMessage(std::string& m)
   mList.pop_back();
   return true;
 }
+
+uint64_t turn = 0;
+uint64_t getTurn()
+{
+  return turn;
+}
+void incTurn()
+{
+  turn++;
+}

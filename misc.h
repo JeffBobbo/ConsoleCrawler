@@ -40,4 +40,7 @@ bool cleanName(const std::string& n);
 void addMessage(const std::string& m);
 bool popMessage(std::string& m);
 
+uint64_t getTurn();
+void incTurn();
+
 #endif
