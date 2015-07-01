@@ -53,6 +53,10 @@ bool Receiver::onEvent()
       if (this->process(event) == false)
         return false;
     }
+    else
+    {
+      std::cerr << "poop" << std::flush;
+    }
 
     this->events.pop_front();
   }
@@ -85,6 +89,7 @@ bool Receiver::pollEvents()
           e.eType = Event::EVENT_TYPE::KEYBOARD;
 //          int32_t key = ibuf[i].Event.KeyEvent.wVirtualKeyCode;
           e.eKey = ibuf[i].Event.KeyEvent.wVirtualKeyCode;
+          e.eKeyState = ibuf[i].Event.KeyEvent.bKeyDown;
         break;
 
         default:

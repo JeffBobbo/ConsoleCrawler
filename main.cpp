@@ -71,12 +71,14 @@ bool eventHandler(const Event& event)
   switch (event.eType)
   {
     case Event::EVENT_TYPE::KEYBOARD:
+    {
       if (event.eKeyState == false)
         break;
 
       currentKey = event.eKey;
       if (std::toupper(static_cast<char >(event.eKey), loc) == 'Q') // Q, 113 for q
         return false;
+    }
     break;
     default:
     break;
@@ -114,10 +116,12 @@ int main(int argc, char** argv)
   receiver = new Receiver(std::function<bool(Event&)>(eventHandler));
   clearConsole();
   Soul* gremlin = nullptr;
-  while (receiver->pollEvents())
+  bool run = true;
+  while (receiver->pollEvents() && run)
   {
     if (currentKey == -1)
       continue;
+    clearConsole();
     presentOptions(player, gremlin);
 
     int32_t opt = currentKey - Event::KEY::K_0;
@@ -140,7 +144,7 @@ int main(int argc, char** argv)
         {
           gremlin->makeImpact(player);
           if (player->getHP() == 0.0)
-            break;
+            run = false;
           player->makeImpact(gremlin);
           if (gremlin->getHP() == 0.0)
           {
@@ -181,9 +185,9 @@ int main(int argc, char** argv)
       incTurn();
     std::cout << std::flush; // kinda outta place, but saves doing it every call to Output()
     std::this_thread::sleep_for(std::chrono::milliseconds(1000 / 50));
-    clearConsole();
   }
 
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   setColour(FG_DEFAULT|BG_DEFAULT);
   clearConsole();
   if (gremlin)
