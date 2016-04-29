@@ -27,7 +27,7 @@ void clearConsole()
 
 TColour operator|(TColour c1, TColour c2)
 {
-  return TColour(uint8_t(c1)|uint8_t(c2)); // cast then cast back, otherwise stack overflow
+  return TColour(static_cast<uint8_t>(c1)|static_cast<uint8_t>(c2)); // cast then cast back, otherwise stack overflow
   // bit ugly, but oh well, I guess that's the cost of over engineering for prettiness
 }
 

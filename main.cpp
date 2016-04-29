@@ -26,33 +26,44 @@ enum OPTIONS
 
 void presentOptions(Player* p, Soul* s)
 {
-  output(p->getName() + "'s status:", 0, 0);
-  output("Level: " + toString(p->getLevel()) + " - " + toString(p->getXP()) + "XP, " + toString(p->getSP()) + "SP" + (getTurn() ? ". Turn: " + toString(getTurn()) : ""), 0, 1);
-  output(std::string("Atk: ") + toString(p->getAtk()) + ", Str: " + toString(p->getStr()) + ", Def: " + toString(p->getDef()), 0, 2);
-  output(std::string("HP: ") + toString(p->getHP()) + "/" + toString(p->getHPMax()) + " (" + toString(static_cast<int16_t>(p->getHPPerc() * 100.0)) + "%)", 0, 3, (p->getHPPerc() >= 0.7 ? FG_GREEN : p->getHPPerc() >= 0.3 ? FG_YELLOW : FG_RED));
-
-  if (s)
+  if (p->getHP())
   {
-    uint16_t x = getConsoleSize().x >> 1;
-    output("Gremlin's status:", x, 0);
-    output(std::string("Level: ") + toString(s->getLevel()), x, 1);
-    output(std::string("Atk: ") + toString(s->getAtk()) + ", Str: " + toString(s->getStr()) + ", Def: " + toString(s->getDef()), x, 2);
-    output(std::string("HP: ") + toString(s->getHP()) + "/" + toString(s->getHPMax()) + " (" + toString(static_cast<int16_t>(s->getHPPerc() * 100.0)) + "%)", x, 3, (s->getHPPerc() >= 0.7 ? FG_GREEN : s->getHPPerc() >= 0.3 ? FG_YELLOW : FG_RED));
+    output(p->getName() + "'s status:", 0, 0);
+    output("Level: " + toString(p->getLevel()) + " - " + toString(p->getXP()) + "XP, " + toString(p->getSP()) + "SP" + (getTurn() ? ". Turn: " + toString(getTurn()) : ""), 0, 1);
+    output(std::string("Atk: ") + toString(p->getAtk()) + ", Str: " + toString(p->getStr()) + ", Def: " + toString(p->getDef()), 0, 2);
+    output(std::string("HP: ") + toString(p->getHP()) + "/" + toString(p->getHPMax()) + " (" + toString(static_cast<int16_t>(p->getHPPerc() * 100.0)) + "%)", 0, 3, (p->getHPPerc() >= 0.7 ? FG_GREEN : p->getHPPerc() >= 0.3 ? FG_YELLOW : FG_RED));
+
+    if (s)
+    {
+      uint16_t x = getConsoleSize().x >> 1;
+      output("Gremlin's status:", x, 0);
+      output(std::string("Level: ") + toString(s->getLevel()), x, 1);
+      output(std::string("Atk: ") + toString(s->getAtk()) + ", Str: " + toString(s->getStr()) + ", Def: " + toString(s->getDef()), x, 2);
+      output(std::string("HP: ") + toString(s->getHP()) + "/" + toString(s->getHPMax()) + " (" + toString(static_cast<int16_t>(s->getHPPerc() * 100.0)) + "%)", x, 3, (s->getHPPerc() >= 0.7 ? FG_GREEN : s->getHPPerc() >= 0.3 ? FG_YELLOW : FG_RED));
+    }
+  }
+  else
+  {
+    output("Oh dear! You have died.", 0, 0);
+    output("Rest in piece, dear " + p->getName(), 0, 1);
   }
 
   output("Available actions:", 0, 5);
   uint16_t opt = 6;
-  if (s)
-    output("[" + toString(OPT_PROG) + "] Attack", 0, opt++);
-  else
-    output("[" + toString(OPT_PROG) + "] Walk forwards", 0, opt++);
-  if (p->getHPPerc() < 1.0)
-  output("[" + toString(OPT_HEAL) + "] Heal", 0, opt++);
-  if (p->getSP())
+  if (p->getHP())
   {
-    output("[" + toString(OPT_ATK) + "] Increase atk", 0, opt++);
-    output("[" + toString(OPT_STR) + "] Increase str", 0, opt++);
-    output("[" + toString(OPT_DEF) + "] Increase def", 0, opt++);
+    if (s)
+      output("[" + toString(OPT_PROG) + "] Attack", 0, opt++);
+    else
+      output("[" + toString(OPT_PROG) + "] Walk forwards", 0, opt++);
+    if (p->getHP() < p->getHPMax())
+      output("[" + toString(OPT_HEAL) + "] Heal", 0, opt++);
+    if (p->getSP())
+    {
+      output("[" + toString(OPT_ATK) + "] Increase atk", 0, opt++);
+      output("[" + toString(OPT_STR) + "] Increase str", 0, opt++);
+      output("[" + toString(OPT_DEF) + "] Increase def", 0, opt++);
+    }
   }
   output("[q] quit", 0, opt++);
   output("> ", 0, opt++);
@@ -132,13 +143,27 @@ int main(int argc, char** argv)
       {
         if (!gremlin)
         {
-          int16_t pLevel = player->getLevel();
-          int16_t pointsToSpend = pLevel * 3;
-          int16_t pAtk = pointsToSpend * randRange(0.25, 0.5);
-          int16_t pStr = pointsToSpend * randRange(0.25, 0.5);
-          int16_t pDef = pointsToSpend - (pAtk + pStr);
-          gremlin = new Soul(9 + pLevel, 9 + pLevel, pAtk, pStr, pDef);
-          addMessage("A wild gremlin appears!");
+          double roll = randRange(0.0, 1.0);
+          if (roll < 0.5)
+          {
+            int16_t pLevel = player->getLevel();
+            int16_t pointsToSpend = pLevel * 3;
+            int16_t pAtk = pointsToSpend * randRange(0.25, 0.5);
+            int16_t pStr = pointsToSpend * randRange(0.25, 0.5);
+            int16_t pDef = pointsToSpend - (pAtk + pStr);
+            gremlin = new Soul(9 + pLevel, 9 + pLevel, pAtk, pStr, pDef);
+            addMessage("A wild gremlin appears!");
+          }
+          else if (roll < 0.6)
+          {
+            int16_t bonus = 1 << randRange(4, 9);
+            player->deltaXP(bonus);
+            addMessage("You found some markings on the wall, upon studying them you feel more intelligent. +" + toString(bonus) + " XP");
+          }
+          else
+          {
+            addMessage("You progress further into the dungeon");
+          }
         }
         else
         {
@@ -157,9 +182,9 @@ int main(int argc, char** argv)
       break;
       case OPT_HEAL:
       {
-        if (getTurn() - player->getLastHeal() < TURNS_PER_HEAL)
+        if (getTurn() + TURNS_PER_HEAL < player->getNextHeal())
         {
-          uint64_t turns = TURNS_PER_HEAL - (getTurn() - player->getLastHeal());
+          uint64_t turns = getTurn() + TURNS_PER_HEAL - player->getNextHeal();
           addMessage("You can't heal yourself right now (" + toString(turns) + " turn" + (turns > 1 ? "s" : "") + " until next).");
         }
         else
@@ -186,6 +211,7 @@ int main(int argc, char** argv)
     std::cout << std::flush; // kinda outta place, but saves doing it every call to Output()
     std::this_thread::sleep_for(std::chrono::milliseconds(1000 / 50));
   }
+
 
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   setColour(FG_DEFAULT|BG_DEFAULT);

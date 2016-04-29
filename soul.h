@@ -30,7 +30,7 @@ public:
   inline uint16_t getDef() const { return def; };
   virtual inline uint16_t getLevel() { return static_cast<double>(atk + str + def) / 2.0; };
 
-  inline uint64_t getLastHeal() const { return lastHeal; };
+  inline uint64_t getNextHeal() const { return lastHeal; };
 
   virtual bool doImpact(const int16_t damage, Soul* source);
   virtual void doDeath(Soul* source);
